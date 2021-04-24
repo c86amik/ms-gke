@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flight-login-service
+  labels:
+    app: flight-login-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flight-login-service
+  template:
+    metadata:
+      labels:
+        app: flight-login-service
+    spec:
+      containers:
+      - name: flight-login-service
+        image: amikchak/gokoders:flight-login-service-0.4
+        ports:
+        - containerPort: 7103
+        #command: ["/bin/sh", "-ec", "sleep 1000"]
+        env:
+        - name: MONGO_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: mongodb
+              key: database-name
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: flight-login-service
+data:
+  application.yml: |-
+    spring:
+     mail:
+      default-encoding: UTF-8
+      host: smtp.gmail.com
+      username: amikevergreen.whitepeaksoft@gmail.com
+      password: EvProg145$
+      port: 587
+      properties:
+       mail:
+        smtp:
+          auth: true
+          ssl:
+            trust: smtp.gmail.com
+          starttls:
+            enable: true
+      protocol: smtp
+      test-connection: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flight-login-service
+  labels:
+    app: flight-login-service
+spec:
+  ports:
+  - port: 7103
+    protocol: TCP
+  selector:
+    app: flight-login-service
+  type: LoadBalancer

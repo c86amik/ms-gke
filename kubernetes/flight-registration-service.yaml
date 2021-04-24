@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flight-registration-service
+  labels:
+    app: flight-registration-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flight-registration-service
+  template:
+    metadata:
+      labels:
+        app: flight-registration-service
+    spec:
+      containers:
+      - name: flight-registration-service
+        image: amikchak/gokoders:flight-registration-service-0.4
+        ports:
+        - containerPort: 7104
+        #command: ["/bin/sh", "-ec", "sleep 1000"]
+        env:
+        - name: MONGO_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: mongodb
+              key: database-name
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flight-registration-service
+  labels:
+    app: flight-registration-service
+spec:
+  ports:
+  - port: 7104
+    protocol: TCP
+  selector:
+    app: flight-registration-service

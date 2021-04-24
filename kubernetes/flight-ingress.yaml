@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: flight-gateway-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /flight-proxy-service/*
+        backend:
+          serviceName: flight-proxy-service
+          servicePort: 7102          
+      - path: /flight-login-service/*
+        backend:
+          serviceName: flight-login-service
+          servicePort: 7103
